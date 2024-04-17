@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User{
+  id  String  @id @default(uuid())
+  email String @unique 
+  username String @unique  
+  password String  
+  avatar String? 
+  posts Post[] 
+  savedPosts SavedPost[] 
+  userChats UserChat[]
+}
+
+model Post{ 
+   id  String  @id @default(uuid()) 
+   title String   
+   price Int  
+   images  String[] 
+   adress String  
+   city String  
+   bedroom Int
+   bathroom Int 
+   latitude String 
+   longitude String  
+   type Type   
+   propertry  Propertry 
+   createdAt DateTime @default(now()) 
+   user User @relation(fields: [userId], references: [id])
+   userId String
+   postDetail PostDetails?
+   savedPosts SavedPost[]
+
+
+   
+
+} 
+enum Type{
+  buy 
+  rent
+}
+enum Propertry{
+  Apartment
+  House  
+  Condo
+  Land
+}
+model PostDetails{ 
+   id  String  @id @default(uuid()) 
+   desc String   
+   utilities String? 
+   pet String?  
+   income String?  
+   size Int? 
+   school Int? 
+   bus  Int?  
+   resturant Int? 
+   postId String @unique
+   post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+
+
+   
+   
+
+
+   
+
+}  
+
+model SavedPost{
+    id  String  @id @default(uuid())   
+    user User @relation(fields: [userId], references: [id]) 
+    post Post @relation(fields: [postId], references: [id], onDelete: Cascade) 
+    userId String  @unique  
+    postId String @unique  
+    @@unique([userId, postId])
+
+
+}
+model UserChat{
+  id String @id @default(uuid())  
+  user User @relation(fields: [userId], references: [id])  
+  userId String   
+  chat Chat @relation(fields: [chatId], references: [id]) 
+  chatId String  
+  @@unique([userId, chatId])
+}
+
+model Chat{
+   id  String  @id @default(uuid())     
+   userChats UserChat[]
+   seenBy String []  
+   message  Message[] 
+   lastMessage String?
+   
+} 
+model Message{
+    id  String  @id @default(uuid())      
+    text String   
+    userId String   
+    chat Chat  @relation(fields: [chatId], references: [id])  
+    chatId String  
+    createdAt DateTime @default(now())
+ } 
+
+
+
+
+
+
+  
+
+
+ 
+ 
